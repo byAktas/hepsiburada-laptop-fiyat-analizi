@@ -1,22 +1,17 @@
-# Dosya Adı: analiz.py
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-# Dosya İsimleri
 GIRIS_DOSYASI = "hepsiburada_laptoplar.csv"
 CIKIS_DOSYASI = "hepsiburada_laptoplar_temiz.csv"
 
 print("--- ADIM 2: VERİ ANALİZİ VE GÖRSELLEŞTİRME ---")
 
-# Dosya var mı kontrol et
 if not os.path.exists(GIRIS_DOSYASI):
     print(f"HATA: '{GIRIS_DOSYASI}' bulunamadı! Önce scraper.py dosyasını çalıştırın.")
     exit()
 
-# 1. Veriyi Yükle
 df = pd.read_csv(GIRIS_DOSYASI)
 print("Ham veri yüklendi.")
 
@@ -33,10 +28,8 @@ df['Yorum_Sayisi_Temiz'] = df['Yorum_Sayisi'].astype(str).str.replace('(', '')\
                                                          .str.replace(')', '')
 df['Yorum_Sayisi_Temiz'] = pd.to_numeric(df['Yorum_Sayisi_Temiz'], errors='coerce').fillna(0).astype(int)
 
-# Marka Çıkarımı: Başlığın ilk kelimesini al
 df['Marka'] = df['Baslik'].str.split().str[0]
 
-# Temiz veriyi kaydet
 df.to_csv(CIKIS_DOSYASI, index=False, encoding='utf-8-sig')
 print(f"Veri temizlendi ve '{CIKIS_DOSYASI}' olarak kaydedildi.")
 
@@ -73,5 +66,6 @@ plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 plt.savefig('grafik_3_fiyat_yorum.png')
 print("Grafik 3 oluşturuldu: grafik_3_fiyat_yorum.png")
+
 
 print("--- İŞLEM TAMAMLANDI ---")
