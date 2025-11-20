@@ -1,5 +1,3 @@
-# Dosya Adı: scraper.py
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -7,7 +5,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-# --- Ayarlar ---
 URL = "https://www.hepsiburada.com/laptop-notebook-dizustu-bilgisayar-c-98"
 HAM_VERI_DOSYASI = "hepsiburada_laptoplar.csv"
 
@@ -19,19 +16,16 @@ try:
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
 
-    # 2. Tarayıcıyı Aç
     print("Tarayıcı başlatılıyor...")
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
 
     print(f"Siteye gidiliyor: {URL}")
     driver.get(URL)
-
-    # 3. Bekleme (15 Saniye)
+    
     print("Sayfanın ve ürünlerin yüklenmesi için 15 saniye bekleniyor...")
     time.sleep(15)
-
-    # 4. Kaynak Kodunu Al
+    
     sayfa_icerigi = driver.page_source
     print("Sayfa kaynağı alındı.")
 
@@ -46,26 +40,21 @@ except Exception as e:
 print("Veriler HTML içinden ayıklanıyor...")
 soup = BeautifulSoup(sayfa_icerigi, 'html.parser')
 
-# Ürün kartlarını bul (Senin tespit ettiğin sınıf)
 urun_kartlari = soup.find_all('li', class_='productListContent-zAP0Y5msy8OHn5z7T_K_')
 print(f"Toplam {len(urun_kartlari)} adet ürün bulundu.")
 
 laptop_verileri = []
 
 for kart in urun_kartlari:
-    # Başlık
     baslik_tag = kart.find(class_='title-module_titleText__8FlNQ')
     baslik = baslik_tag.text.strip() if baslik_tag else "N/A"
 
-    # Fiyat
     fiyat_tag = kart.find(class_='price-module_finalPrice__LtjvY')
     fiyat = fiyat_tag.text.strip() if fiyat_tag else "N/A"
 
-    # Yorum Sayısı
     yorum_tag = kart.find(class_='rate-module_count__fjUng')
     yorum_sayisi = yorum_tag.text.strip() if yorum_tag else "0"
 
-    # Listeye Ekle (Boş verileri alma)
     if baslik != "N/A":
         laptop_verileri.append({
             'Baslik': baslik,
@@ -73,10 +62,10 @@ for kart in urun_kartlari:
             'Yorum_Sayisi': yorum_sayisi
         })
 
-# --- Kaydetme ---
 if laptop_verileri:
     df = pd.DataFrame(laptop_verileri)
     df.to_csv(HAM_VERI_DOSYASI, index=False, encoding='utf-8-sig')
     print(f"BAŞARILI! {len(df)} adet veri '{HAM_VERI_DOSYASI}' dosyasına kaydedildi.")
 else:
+
     print("UYARI: Hiç veri çekilemedi. HTML yapısı değişmiş olabilir.")
