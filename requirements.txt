@@ -1,6 +1,9 @@
 selenium
 beautifulsoup4
 pandas
-matplotlib
-seaborn
+streamlit
+plotly
+wordcloud
 webdriver-manager
+matplotlib
+regex
